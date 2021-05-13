@@ -3,7 +3,7 @@ import torch
 from torch import nn
 import numpy as np
 import matplotlib.pyplot as plt
-from skimage.measure import compare_ssim,compare_psnr, compare_mse
+from skimage.metrics import structural_similarity, mean_squared_error
 from utils import compute_psnr
 
 from dataset import *
@@ -73,9 +73,9 @@ def test_abs(n_test,n_batch,n_steps,alpha,u,x_test):
         x_test_rec[epoch_idx[iters*n_batch:np.min([(iters+1)*n_batch,n_test])],:,:,:] = x_est.cpu().detach().numpy()
 
     
-    mse_list = [compare_mse(x_test[i,0,:,:],x_test_rec[i,0,:,:]) for i in range(n_test)]
+    mse_list = [mean_squared_error(x_test[i,0,:,:],x_test_rec[i,0,:,:]) for i in range(n_test)]
     psnr_list = [compute_psnr(x_test[i,0,:,:],x_test_rec[i,0,:,:]) for i in range(n_test)]
-    ssim_list = [compare_ssim(x_test[i,0,:,:],x_test_rec[i,0,:,:]) for i in range(n_test)]
+    ssim_list = [structural_similarity(x_test[i,0,:,:],x_test_rec[i,0,:,:]) for i in range(n_test)]
     print(f'mse {np.mean(mse_list):.2f}')
     print(f'psnr {np.mean(psnr_list):.2f}')
     print(f'ssim {np.mean(ssim_list):.2f}')
