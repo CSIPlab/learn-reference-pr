@@ -3,7 +3,7 @@ import torch
 from torch import nn
 import numpy as np
 import matplotlib.pyplot as plt
-from skimage.measure import compare_ssim,compare_psnr, compare_mse
+from skimage.metrics import peak_signal_noise_ratio
 
 from pathlib import Path
 from dataset import *
@@ -18,7 +18,7 @@ def train_abs(n_epoch,n_train,n_batch,alpha,lr_u,n_steps,U_range,dataset,x_train
     _, height, width, nc = x_train.shape
     
     zeropad = nn.ZeroPad2d(height//2)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     dirs = f'./output_abs/20200202_{dataset}_{n_epoch}_{n_train//n_batch}_{n_batch}_{alpha}_{lr_u}_{n_steps}_{U_range}/'
     disk_dir = Path(dirs)
@@ -141,7 +141,8 @@ def train_abs(n_epoch,n_train,n_batch,alpha,lr_u,n_steps,U_range,dataset,x_train
         psnr = 20*np.log10((np.max(x_train)-np.min(x_train))/np.sqrt(mse))
         print(f'psnr {psnr}')
         print(f'mse {mse}')
-        psnr_list = [compare_psnr(x_train[i,0,:,:],x_train_rec[i,0,:,:]) for i in range(n_train)]
+        psnr_list = [peak_signal_noise_ratio(x_train[i,0,:,:],x_train_rec[i,0,:,:]) for i in range(n_train)]
+
 
         
 
